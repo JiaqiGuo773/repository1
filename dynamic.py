@@ -1,5 +1,6 @@
 import requests
 import json
+import pymysql
 
 url="https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=7a0ee16c2311e8aaf0dd46322e64a4ed3e2a8069"
 text_page=requests.get(url).text
@@ -17,3 +18,5 @@ conn = pymysql.connect(
 cur = conn.cursor() 
 
 sql = "CREATE TABLE dynamic (number INT, contract_name VARCHAR(100), name VARCHAR(100),address VARCHAR(100),position_lat VARCHAR(100), position_lng VARCHAR(100),banking VARCHAR(100), bonus VARCHAR(100), bike_stands INT, available_bike_stands INT, available_bikes INT,status VARCHAR(100), last_update  VARCHAR(100));"
+
+cur.execute(sql)
