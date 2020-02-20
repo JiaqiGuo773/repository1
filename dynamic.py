@@ -12,7 +12,6 @@ conn = pymysql.connect(
         port = 3306,
         user = 'admin',
         passwd = 'jo91TKYJs0czd6DAu4M1',
-        db = '',
         charset = 'utf8',
     )
 cur = conn.cursor() 
