@@ -57,6 +57,7 @@ while i < num:
     last_update = tmp[i]['last_update']
     value = [numbe, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_stands, available_bikes, status, last_update]
     sql_insert =("insert into station(numbe, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_standsble, available_bikes, status, last_update) values (%d,%s,%s,%s,%f,%f,%s, %s, %d, %d, %d, %s, %s);",value)
+    sql_insert = sql_insert.encode("utf8")
     print(sql_insert)
     
     cur.execute(sql_insert)
