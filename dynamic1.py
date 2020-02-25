@@ -45,6 +45,7 @@ i=0
 while i < num:
     number = tmp[i]['number']
     contract_name  = tmp[i]['contract_name']
+    name = tmp[i]['name']
     address = tmp[i]['address'] 
     position_lat = tmp[i]['position']['lat']
     position_lng = tmp[i]['position']['lng']
