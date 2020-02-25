@@ -16,6 +16,6 @@ conn = pymysql.connect(
        
 cur = conn.cursor() 
 
-sql = "CREATE TABLE station (number INTEGER, contract_name VARCHAR(256), name VARCHAR(256), address VARCHAR(256), position_lat REAL, position_lng REAL, banking VARCHAR(100), bonus VARCHAR(100), bike_stands INTEGER, available_bike_stands INTEGER, available_bikes INTEGER,status VARCHAR(100), last_update VARCHAR(100))"
+sql = "CREATE TABLE station (number INTEGER, contract_name VARCHAR(256), name VARCHAR(256), address VARCHAR(256), position_lat REAL, position_lng REAL, banking VARCHAR(100), bonus VARCHAR(100), bike_stands INTEGER, available_bike_stands INTEGER, available_bikes INTEGER,status VARCHAR(100), last_update VARCHAR(100));"
 
 cur.execute(sql)
