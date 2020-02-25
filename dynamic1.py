@@ -2,6 +2,7 @@ import requests
 import json
 import pymysql
 from ipykernel.tests import tmp
+from IPython.core.inputsplitter import last_blank
 
 url="https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=7a0ee16c2311e8aaf0dd46322e64a4ed3e2a8069"
 text_page=requests.get(url).text
@@ -42,7 +43,7 @@ tmp = json.loads(out)
 num = len(tmp)
 i=0
 while i < num:
-    numbe = tmp[i]['number']
+    number = tmp[i]['number']
     contract_name  = tmp[i]['contract_name']
     name = tmp[i]['name']
     address = tmp[i]['address'] 
@@ -55,9 +56,9 @@ while i < num:
     available_bikes = tmp[i]['available_bikes']
     status = tmp[i]['status'] 
     last_update = tmp[i]['last_update']
-    value = [numbe, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_stands, available_bikes, status, last_update]
-    sql_insert =("insert into station(numbe, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_standsble, available_bikes, status, last_update) values (%d,%s,%s,%s,%f,%f,%s, %s, %d, %d, %d, %s, %s);",value)
-    sql_insert = sql_insert.encode("utf8")
+    value = (numbe, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_stands, available_bikes, status, last_update)
+    sql_insert ="insert into station(number, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_standsble, available_bikes, status, last_update) values (%d, %s,%s,%s,%f,%f,%s, %s, %d, %d, %d, %s, %s);" %value
+  
     print(sql_insert)
     
     cur.execute(sql_insert)
