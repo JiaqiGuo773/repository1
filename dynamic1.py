@@ -17,7 +17,7 @@ conn = pymysql.connect(
        
 cur = conn.cursor() 
 
-'''sql = """CREATE TABLE station (
+sql = """CREATE TABLE IF NOT EXISTS station (
     number INTEGER, 
     contract_name VARCHAR(256), 
     name VARCHAR(256), 
@@ -32,11 +32,12 @@ cur = conn.cursor()
     status VARCHAR(100), 
     last_update VARCHAR(100))"""
 
-cur.execute(sql)'''
+cur.execute(sql)
 
 a=open(r"dynamic.json", "r")
 
 out = a.read()
+tmp = json.dumps(out)
 tmp = json.loads(out)
 num = len(tmp)
 i=0
