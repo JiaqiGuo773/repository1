@@ -2,7 +2,7 @@ import requests
 import json
 import pymysql
 import traceback
-import datetime
+from datetime import datetime
 import time
 import pandas as pd
 from ipykernel.tests import tmp
