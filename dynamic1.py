@@ -16,7 +16,7 @@ while True:
         now=datetime.datetime.now()
         
         text_page=requests.get(url).text
-        print(text_page,now) 
+        print(now) 
         with open("dynamic.json", "w") as file:
             file.write(text_page)
     except:
