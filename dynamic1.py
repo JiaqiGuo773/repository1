@@ -2,7 +2,8 @@ import requests
 import json
 import pymysql
 import traceback
-import  time
+import datetime
+import time
 from ipykernel.tests import tmp
 from IPython.core.inputsplitter import last_blank
 
@@ -11,8 +12,11 @@ from IPython.core.inputsplitter import last_blank
 url="https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=7a0ee16c2311e8aaf0dd46322e64a4ed3e2a8069"
 
 while True:
-    try:     
+    try:
+        now=datetime.datetime.now()
+        
         text_page=requests.get(url).text
+        print(text_page,now) 
         with open("dynamic.json", "w") as file:
             file.write(text_page)
     except:
@@ -70,7 +74,7 @@ while True:
          
         value = (number, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_stands, available_bikes, status, last_update)
         sql_insert ='insert into station(number, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bike_stands, available_bikes, status, last_update) values (%d, "%s","%s","%s",%f,%f,"%s", "%s", %d, %d, %d, "%s", "%s");' %value
-     
+        
         print(sql_insert)
         try:
             cur.execute(sql_insert)
@@ -78,4 +82,4 @@ while True:
             print(e)
         i+=1
     conn.commit()
-    time.sleep(20)
+    time.sleep(5*60)
