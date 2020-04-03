@@ -3,8 +3,6 @@ import json
 import pymysql
 import traceback
 from datetime import datetime
-import time
-import pandas as pd
 from ipykernel.tests import tmp
 from IPython.core.inputsplitter import last_blank
 
@@ -14,7 +12,7 @@ url="https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=7a0ee16c231
 
 while True:
     try:
-        now=datetime.datetime.now()
+        now=datetime.now()
         
         text_page=requests.get(url).text
         print(now) 
