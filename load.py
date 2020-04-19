@@ -1,4 +1,12 @@
 import utils
+import requests
+import json
+import pymysql
+import traceback
+from datetime import datetime
+from pandas.io.json import json_normalize
+from sqlalchemy import create_engine
+import pandas as pd
 
 f=open(r"availability.json", "r")
 out = f.read()
