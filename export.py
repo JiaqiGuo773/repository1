@@ -19,10 +19,6 @@ data=cur.fetchall
 print(data)
 cur.close()
 conn.close()
-filename='b.csv'
-with open(filename,mode='w',encoding='utf-8') as f:
-        write = csv.writer(f,dialect='excel')
-        for item in data:
-            write.writerow(item)
+
 
 
