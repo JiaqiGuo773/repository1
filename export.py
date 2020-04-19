@@ -16,6 +16,7 @@ writer.writerow(['weather_main', 'weather_description', 'temp', 'feels_like', 't
 conn,cur = utils.get_conn_cur()
 cur.execute("select * from availability")
 data=cur.fetchall
+print(data)
 writer.writerows(data)
 csvfile.close()
 conn.commit()
