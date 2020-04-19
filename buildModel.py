@@ -31,14 +31,16 @@ def getCSV():
 	conn.close()
 	filename='weather.csv'
 	with open(filename,mode='w',encoding='utf-8') as f:
-	        write = csv.writer(f,dialect='excel')
-	        for item in weatherdata:
-	            write.writerow(item)
+	    write = csv.writer(f,dialect='excel')
+	    write.writerow(['weather_main', 'weather_description', 'temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity', 'visibility', 'wind_speed', 'wind_deg', 'clouds_all', 'rain_1h', 'rain_3h', 'snow_1h', 'snow_3h', 'dt', 'sunrise', 'sunset'])
+	    for item in weatherdata:
+	        write.writerow(item)
 	filename='availability.csv'
 	with open(filename,mode='w',encoding='utf-8') as f:
-	        write = csv.writer(f,dialect='excel')
-	        for item in avadata:
-	            write.writerow(item)	
+	    write = csv.writer(f,dialect='excel')
+	    write.writerow(['number', 'available_bikes', 'available_bike_stands', 'last_updat'])
+	    for item in avadata:
+	        write.writerow(item)	
 
 def cleanAndMergeCSV():
 	dynamicdata = pd.read_csv('availability.csv', keep_default_na=True, skipinitialspace=True)
