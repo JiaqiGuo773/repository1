@@ -6,16 +6,17 @@ import pandas as pd
 from sqlalchemy import create_engine
 import json
 import utils
+import pickle
 
 app = Flask(__name__) 
 
 
 @app.route("/")
-def hello():
+def index():
     return render_template("index.html")
 
 @app.route("/stations")
-def get_station():
+def get_stations():
     engine = utils.get_db()
     sql = "select * from station;"    
     rows = engine.execute(sql).fetchall() 
@@ -33,25 +34,57 @@ def get_occupancy(station_id):
     res=res.fillna("0")
     return jsonify(data=json.dumps(list(zip(map(lambda x: x.isoformat(), res.index),  map(lambda x: int(x),res.values)))))
  
-@app.route("/test")  
-def a():
-    URI ="127.0.0.1"
-    PORT ="3306"
-    DB="mydb"
-    USER="root"
-    PASSWORD = "abc963215"
+@app.route("/station_occupancy_weekly/<int:station_id>")
+def get_station_occupancy_weekly(station_id):
+    engine = utils.get_db()
+    days = ['Mon','Tue','Wed','Thurs', 'Fri', 'Sat', 'Sun']
+    df = pd.read_sql_query("select * from availability where number = %(number)s", engine, params={"number": station_id})
+    df['last_update_date'] = pd.to_datetime(df.last_update, unit='ms')     
+    df.set_index('last_update_date', inplace=True)     
+    df['weekday'] = df.index.weekday
+    mean_available_stands = df[['available_bike_stands', 'weekday']].groupby('weekday').mean()
+    mean_available_bikes = df[['available_bikes', 'weekday']].groupby('weekday').mean()         
     
-    engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(USER,PASSWORD,URI,PORT,DB),echo=True)
-    sql = "select * from station;"    
-    rows = engine.execute(sql).fetchall() 
-    print('#found {} stations', len(rows))
-    print(rows[0])
-    print(dir(rows[0]))
-    a=rows[0]
-    print(a.items())
+    mean_available_stands.index = days     
+    mean_available_bikes.index = days 
     
-    return jsonify(stations=[dict(row.items()) for row in rows])
+    print(mean_available_bikes)
+    print(mean_available_stands)
+    
+    df = pd.read_sql_query("select * from availability where number = %(number)s", engine, params={"number":station_id})
+    df['last_update_date'] = pd.to_datetime(df.last_update, unit='ms')    
+    df.set_index('last_update_date', inplace=True) 
+       
+    mean_available_stands_h = df['available_bike_stands'].resample('1h').mean()
+    mean_available_bikes_h = df['available_bikes'].resample('1h').mean()
+    
+    mean_available_stands_h=mean_available_stands_h.fillna("0")
+    mean_available_bikes_h=mean_available_bikes_h.fillna("0")
+    
+    print(mean_available_bikes_h)
+    print(mean_available_stands_h)
+    
+    return jsonify(mean_available_stands=list(zip(mean_available_stands.index,map(lambda x: int(x),mean_available_stands.values))), 
+                   mean_available_bikes=list(zip(mean_available_bikes.index,map(lambda x: int(x),mean_available_bikes.values))),
+                   mean_available_stands_h=list(zip(map(lambda x: x.isoformat(), mean_available_stands_h.index), map(lambda x: int(x),mean_available_stands_h.values))),
+                   mean_available_bikes_h=list(zip(map(lambda x: x.isoformat(), mean_available_bikes_h.index), map(lambda x: int(x),mean_available_stands_h.values)))
+                   )
+
+
+@app.route("/predict/<int:station_id>") 
+def predict(station_id):
+    df, time_list = utils.get_fotecast(station_id)
+    print(df)
+    with open('model.pkl', 'rb') as handle:     
+        model = pickle.load(handle)  
+    
+    result = model.predict(df).tolist()
+    
+    return jsonify(list(zip(time_list,result)))
+         
+
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
 
