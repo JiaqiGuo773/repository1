@@ -27,7 +27,7 @@ while i < num:
     
         last_update = tmp[i]['last_update'] 
         
-        value1 = (number, contract_name, name, address, position_lat, position_lng, banking, bonus, bike_stands, available_bikes, status)
+        
         value2 = (number, available_bikes, available_bike_stands, last_update)
        
         sql_insert2 ='insert into availability(number, available_bikes, available_bike_stands, last_update) values (%d, %d, %d, "%s");' %value2
