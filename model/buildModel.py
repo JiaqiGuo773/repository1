@@ -9,6 +9,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 import pymysql
 import utils
+import sys
+
+sys.path.append(r'.\utils.py')
+
 
 def buildModel():
 	getCSV()

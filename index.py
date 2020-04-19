@@ -7,6 +7,8 @@ from sqlalchemy import create_engine
 import json
 import utils
 import pickle
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
 
 app = Flask(__name__) 
 
