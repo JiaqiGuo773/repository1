@@ -48,8 +48,6 @@ def get_station_occupancy_weekly(station_id):
     mean_available_stands.index = days     
     mean_available_bikes.index = days 
     
-    print(mean_available_bikes)
-    print(mean_available_stands)
     
     df = pd.read_sql_query("select * from availability where number = %(number)s", engine, params={"number":station_id})
     df['last_update_date'] = pd.to_datetime(df.last_update, unit='ms')    
@@ -61,8 +59,6 @@ def get_station_occupancy_weekly(station_id):
     mean_available_stands_h=mean_available_stands_h.fillna("0")
     mean_available_bikes_h=mean_available_bikes_h.fillna("0")
     
-    print(mean_available_bikes_h)
-    print(mean_available_stands_h)
     
     return jsonify(mean_available_stands=list(zip(mean_available_stands.index,map(lambda x: int(x),mean_available_stands.values))), 
                    mean_available_bikes=list(zip(mean_available_bikes.index,map(lambda x: int(x),mean_available_bikes.values))),
