@@ -71,7 +71,7 @@ def get_station_occupancy_weekly(station_id):
 def predict(station_id):
     df, time_list = utils.get_fotecast(station_id)
     print(df)
-    with open('model.pkl', 'rb') as handle:     
+    with open('./model/model.pkl', 'rb') as handle:     
         model = pickle.load(handle)  
     
     result = model.predict(df).tolist()

@@ -262,7 +262,7 @@ def get_fotecast(station_id):
         df = pd.get_dummies(df)   
 
         
-        X_test = pd.read_csv('X_test.csv')
+        X_test = pd.read_csv('./model/X_test.csv')
         
         columns=[]
         for i in X_test.columns:
