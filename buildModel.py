@@ -38,14 +38,13 @@ def getCSV():
 	filename='availability.csv'
 	with open(filename,mode='w',encoding='utf-8') as f:
 	    write = csv.writer(f,dialect='excel')
-	    write.writerow(['number', 'available_bikes', 'available_bike_stands', 'last_updat'])
+	    write.writerow(['number', 'available_bikes', 'available_bike_stands', 'last_update'])
 	    for item in avadata:
 	        write.writerow(item)	
 
 def cleanAndMergeCSV():
 	dynamicdata = pd.read_csv('availability.csv', keep_default_na=True, skipinitialspace=True)
 	weatherdata = pd.read_csv('weather.csv',  keep_default_na=True, skipinitialspace=True)
-	print(dynamicdata)
 	dynamicdata['last_update_date'] = pd.to_datetime(dynamicdata.last_update, unit='ms')
 	weekday_List = []
 	hour_List = []
