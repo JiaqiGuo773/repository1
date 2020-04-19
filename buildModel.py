@@ -45,6 +45,7 @@ def getCSV():
 def cleanAndMergeCSV():
 	dynamicdata = pd.read_csv('availability.csv', keep_default_na=True, skipinitialspace=True)
 	weatherdata = pd.read_csv('weather.csv',  keep_default_na=True, skipinitialspace=True)
+	print(dynamicdata)
 	dynamicdata['last_update_date'] = pd.to_datetime(dynamicdata.last_update, unit='ms')
 	weekday_List = []
 	hour_List = []
