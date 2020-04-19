@@ -9,6 +9,7 @@ import pandas as pd
 import pickle
 
 
+
 def get_db():
     URI ="database-1.cwouctjtnr0b.eu-west-1.rds.amazonaws.com"
     PORT ="3306"
@@ -262,7 +263,7 @@ def get_fotecast(station_id):
         df = pd.get_dummies(df)   
 
         
-        X_test = pd.read_csv('./model/X_test.csv')
+        X_test = pd.read_csv('/X_test.csv')
         
         columns=[]
         for i in X_test.columns:
