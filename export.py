@@ -16,6 +16,7 @@ import csv
 conn,cur = utils.get_conn_cur()
 cur.execute("select * from availability;")
 data=cur.fetchall
+print(data)
 cur.close()
 conn.close()
 filename='b.csv'
