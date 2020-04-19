@@ -21,7 +21,7 @@ while i < num:
         
         
        
-        bike_stands = tmp[i]['bike_stands']
+
         available_bike_stands = tmp[i]['available_bike_stands']
         available_bikes = tmp[i]['available_bikes']
     
