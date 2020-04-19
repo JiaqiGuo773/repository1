@@ -1,10 +1,10 @@
 <!DOCTYPE html>
  <html>   
  	<head>     
-	 	<title>Simple Map</title>     
+	 	<title>Dublin Bike</title>     
 	 	<meta name="viewport"content="initial-scale=1.0">     
 	 	<meta charset="utf-8">
-	 	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0KRtOnUdHBGVMC4uubHn-5EhGnWXEAB8&callback=initMap">
+	 	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0KRtOnUdHBGVMC4uubHn-5EhGnWXEAB8&libraries=visualization&callback=initMap">
 		</script>
 	 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
 	 	<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script> 
@@ -18,20 +18,26 @@
 			} 
 			/* Optional: Makes the sample page fill the window. */      
 			html, body {         
-				height: 100%;         
+				height: 90%;         
 				margin: 0;         
 				padding: 0;       
 			}     
 		</style>   
 	</head>   
-	<body>     
-		<div id="map"></div>  
+	<body>
+        <div>
+        <input id="check1" type="checkbox" value="Heatmap of Available Bikes">
+        <label for="check1">Heatmap of Available bikes</label>
+        </div>
+        
+		<div id="map"></div>
+        <div id="chart" style="text-align:center;"></div>
 	
 	     
 		<script>
 			google.charts.load("current", {packages:['corechart']});
 		
-			var map; 
+			var map, heatmap; 
 			function initMap() {         
 				map = new google.maps.Map(document.getElementById('map'), {           
 					center: {lat: 53.34972, lng: -6.26028},           
@@ -61,11 +67,12 @@
 						contentString = '<div id="content"><h1>' + station.name + '</h1></div>'+ '<div id="station_availability"></div>';
                         
 						google.maps.event.addListener(marker,'click',function(){
-						
-						  drawInfoWindowChart(marker);
-    					
-						
+				            drawInfoWindowChart(marker);
+                            document.getElementById('chart').innerHTML="";
+                            drawChart(marker);
 						});
+                        
+						
 					})
 				})
 				.fail(function() {
@@ -95,7 +102,7 @@
                      start.setDate(today.getDate()-14);
                     
                      var options = {
-                        title: "Availability of "+marker.title,
+                        title: "Available stands of "+marker.title,
                         width: 450,
                         height: 200,
                         hAxis:{
@@ -129,8 +136,219 @@
                     console.log( "error" );
                 })
 			}
-			
-			
+            
+			var checkbox = $("#check1");
+            
+            checkbox.click(function(){
+                drawHeatmap(checkbox);
+            });
+            
+			function drawHeatmap(checkbox) {
+                //console.log('toggle heatmap');
+                console.log('clicked checkbox-1', checkbox, checkbox.prop('checked'));
+                checked = checkbox.prop('checked');
+                if(checked) {
+                    if(heatmap == null) {
+                        
+                        var jqxhr = $.getJSON($SCRIPT_ROOT + "/stations",function(data) {
+                            console.log('data', data);
+                            var heatmapData = [];
+                            
+                            _.forEach(data.stations, function(row) {
+                                heatmapData.push({
+                                    location: new google.maps.LatLng(row.position_lat, row.position_lng),weight: row.available_bikes});
+                            }); 
+                            
+                            heatmap = new google.maps.visualization.HeatmapLayer({
+                                data: heatmapData,
+                                map: map});
+                            
+                            console.log(heatmap);
+                            heatmap.setMap(map);        
+                            heatmap.set('radius', 40);
+                        }).fail(function() {
+                            console.log('failed');
+                        });
+                    } else {
+                        heatmap.setMap(map);
+                    }
+                } else {
+                    heatmap.setMap(null);
+                }
+            }
+            
+            
+            
+            function drawChart(marker) {
+                var jqxhr = $.getJSON($SCRIPT_ROOT + "/station_occupancy_weekly/" + marker.station_number, function(data) {
+                    
+                    console.log('data', data);
+                    
+                    var node1 = document.createElement('div'),
+                    node2 = document.createElement('div'),
+                    node3 = document.createElement('div'),
+                    node4 = document.createElement('div'),
+                    node5  = document.createElement('div'),
+                    buttonNode = document.createElement('div'),
+                    button = document.createElement('button'),
+                    title = document.createElement("h4"),
+                    chart1 = new google.visualization.LineChart(node1),
+                    chart_data1 = new google.visualization.DataTable(),
+                    chart2 = new google.visualization.LineChart(node2),
+                    chart_data2 = new google.visualization.DataTable(),
+                        
+                    chart3 = new google.visualization.LineChart(node3),
+                    chart_data3 = new google.visualization.DataTable(),
+                    chart4 = new google.visualization.LineChart(node4),
+                    chart_data4 = new google.visualization.DataTable();
+                        
+                    
+                    title.innerText = "Availability of "+marker.title;
+                    title.style.padding = '20px';
+                    
+                    document.getElementById("chart").appendChild(title);
+                    document.getElementById("chart").appendChild(node1);
+                    document.getElementById("chart").appendChild(node2);
+                    document.getElementById("chart").appendChild(node3);
+                    document.getElementById("chart").appendChild(node4);
+                    document.getElementById("chart").appendChild(buttonNode);
+                    
+                    buttonNode.appendChild(button);
+                    
+                    button.innerHTML = "Predict 5 days";
+                    button.onclick=function(){drawPredict(marker,node5);};
+                   
+                    node1.style.display= 'inline-block';
+                    node2.style.display= 'inline-block';
+                    node3.style.display= 'inline-block';
+                    node4.style.display= 'inline-block';
+                    node5.style.display= 'inline-block';
+                    
+                    
+                    node1.style.width= '50%';
+                    node2.style.width= '50%';
+                    node3.style.width= '50%';
+                    node4.style.width= '50%';
+                    node5.style.width = '70%';
+                    
+                    button.style.display = 'inline-block';
+                    button.style.width= '120px';
+                    button.style.background='#11F8F8';
+                    button.style.margin='20px'
+                   
+                    chart_data1.addColumn('string', 'Week Day');
+                    chart_data1.addColumn('number', 'available bikes');
+                    
+                    chart_data2.addColumn('string', 'Week Day');
+                    chart_data2.addColumn('number', 'available stands');
+                    
+                    chart_data3.addColumn('date', 'Time of Day');
+                    chart_data3.addColumn('number', 'available bikes');
+                    
+                    chart_data4.addColumn('date', 'Time of Day');
+                    chart_data4.addColumn('number', 'available stands');
+                    
+                    _.forEach(data.mean_available_bikes, function(row){
+                        chart_data1.addRow([row[0], row[1]]);
+                        })
+                    
+                    _.forEach(data.mean_available_stands, function(row){
+                        chart_data2.addRow([row[0], row[1]]);
+                        })
+                    
+                    _.forEach(data.mean_available_bikes_h, function(row){
+                        chart_data3.addRow([new Date(row[0]), row[1]]);
+                        })
+                    
+                    _.forEach(data.mean_available_stands_h, function(row){
+                        chart_data4.addRow([new Date(row[0]), row[1]]);
+                        })
+                    
+                    var today = new Date();
+                    var start=new Date();
+                    start.setDate(today.getDate()-7);
+                    
+                    
+                    var options1 = {
+                        title: "Available bikes of "+marker.title,
+                        width: 600,
+                        height: 300,
+                        
+                     };
+                     var options2 = {
+                        title: "Available stands of "+marker.title,
+                        width: 600,
+                        height: 300,
+                        
+                     };
+                    var options3 = {
+                        title: "Available bikes of "+marker.title,
+                        width: 600,
+                        height: 300,
+                        hAxis:{
+                            viewWindow: {
+                                    min: start,
+                                    max: today
+                                  },
+                            format: 'MMM dd'
+                        }
+                     };
+                    var options4 = {
+                        title: "Available stands of "+marker.title,
+                        width: 600,
+                        height: 300,
+                        hAxis:{
+                            viewWindow: {
+                                    min: start,
+                                    max: today
+                                  },
+                            format: 'MMM dd'
+                            }
+                     };
+                    
+                    chart1.draw(chart_data1,options1);
+                    chart2.draw(chart_data2,options2);
+                    chart3.draw(chart_data3,options3);
+                    chart4.draw(chart_data4,options4);
+                    
+                    
+                    
+                }).fail(function() {
+                    console.log( "error" );
+                })
+                
+            }
+            
+            function drawPredict(marker,node){
+                var jqxhr = $.getJSON($SCRIPT_ROOT + "/predict/" + marker.station_number, function(data) {
+                    console.log('data', data);
+                    var chart = new google.visualization.LineChart(node),
+                        chart_data = new google.visualization.DataTable();
+                     
+                    document.getElementById("chart").appendChild(node);
+                    
+                    chart_data.addColumn('date', 'Time of Day');
+                    chart_data.addColumn('number', 'available bikes');
+                    
+                    _.forEach(data, function(row){
+                        chart_data.addRow([new Date(row[0]), row[1]]);
+                        })
+                    
+                      var options = {
+                        title: "Predict for available bikes of "+marker.title,
+                        width: 900,
+                        height: 400,
+                        hAxis:{
+            
+                            format: 'h:mm MMM dd'
+                        }
+                        
+                     };
+                    chart.draw(chart_data,options);
+                }).fail(function() {
+                    console.log( "error" );
+                })
+            }
 			   
 		</script>     
 	 	
